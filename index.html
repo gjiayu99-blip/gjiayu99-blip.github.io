@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>学术发展与权益部面试时间与地点</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/ajax/libs.font-awesome/6.4.0/css/all.min.css">
+    <script>
+        // 测试用面试信息数据（姓名与时间对应）
+        const interviewData = [
+            { name: "王乐荣", time: "2025.09.07-13:00" },
+            { name: "杨岚", time: "2025.09.07-14:00" },
+            { name: "石诗雨", time: "2025.09.07-13:20" }
+        ];
+
+        // 页面加载完成后初始化功能
+        document.addEventListener('DOMContentLoaded', function() {
+            const queryLink = document.getElementById('queryLink');
+            const resultModal = document.getElementById('resultModal');
+            const closeModal = document.getElementById('closeModal');
+            const closeModalBtn = document.getElementById('closeModalBtn');
+            const nameInput = document.getElementById('nameInput');
+            const queryBtn = document.getElementById('queryBtn');
+            const resultContent = document.getElementById('resultContent');
+
+            // 点击查询链接弹出输入弹窗
+            queryLink.addEventListener('click', function(e) {
+                e.preventDefault();
+                resultModal.classList.remove('hidden');
+                nameInput.value = '';
+                resultContent.innerHTML = '';
+                nameInput.focus(); // 自动聚焦输入框，方便手机输入
+            });
+
+            // 关闭弹窗函数（统一处理多种关闭方式）
+            const hideModal = () => resultModal.classList.add('hidden');
+            closeModal.addEventListener('click', hideModal);
+            closeModalBtn.addEventListener('click', hideModal);
+            // 点击弹窗外部关闭
+            window.addEventListener('click', (e) => e.target === resultModal && hideModal());
+
+            // 核心查询逻辑
+            const queryInterview = () => {
+                const inputName = nameInput.value.trim();
+                // 验证输入不为空
+                if (!inputName) {
+                    resultContent.innerHTML = `
+                        <div class="text-red-500 text-center mb-4 flex items-center justify-center">
+                            <i class="fa-solid fa-exclamation-circle mr-2"></i>请输入姓名后查询
+                        </div>
+                    `;
+                    return;
+                }
+
+                // 匹配姓名（不区分大小写，提升容错性）
+                const matched = interviewData.find(item => 
+                    item.name.toLowerCase() === inputName.toLowerCase()
+                );
+
+                if (matched) {
+                    // 显示匹配结果（含固定地点与提示）
+                    resultContent.innerHTML = `
+                        <div class="bg-green-50 border-l-4 border-green-500 p-4 mb-4 rounded-r">
+                            <h3 class="text-lg font-bold text-green-800 mb-3 flex items-center">
+                                <i class="fa-solid fa-user-check mr-2"></i>${matched.name} 面试信息
+                            </h3>
+                            <div class="space-y-2 text-gray-700">
+                                <p class="flex items-center"><i class="fa-solid fa-clock w-5 text-center mr-2 text-green-600"></i>面试时间：${matched.time}</p>
+                                <p class="flex items-center"><i class="fa-solid fa-map-marker-alt w-5 text-center mr-2 text-green-600"></i>面试地点：清水河校区立人楼A416</p>
+                                <p class="flex items-center"><i class="fa-solid fa-waiter w-5 text-center mr-2 text-green-600"></i>等候室：清水河校区立人楼A415</p>
+                            </div>
+                        </div>
+                        <div class="bg-orange-50 border-l-4 border-orange-500 p-4 rounded-r">
+                            <p class="text-gray-700 flex items-center mb-2">
+                                <i class="fa-solid fa-camera-retro w-5 text-center mr-2 text-orange-600"></i>建议截图保存本页面
+                            </p>
+                            <p class="text-gray-700 flex items-center">
+                                <i class="fa-solid fa-bell w-5 text-center mr-2 text-orange-600"></i>请提前十分钟到达等候室等候
+                            </p>
+                        </div>
+                    `;
+                } else {
+                    // 未找到匹配信息提示
+                    resultContent.innerHTML = `
+                        <div class="bg-yellow-50 border-l-4 border-yellow-500 p-4 text-center rounded-r">
+                            <p class="text-gray-700 flex items-center justify-center">
+                                <i class="fa-solid fa-search mr-2 text-yellow-600"></i>未找到「${inputName}」的面试信息
+                            </p>
+                            <p class="text-sm text-gray-500 mt-2">请检查姓名输入是否正确</p>
+                        </div>
+                    `;
+                }
+            };
+
+            // 点击查询按钮触发查询
+            queryBtn.addEventListener('click', queryInterview);
+            // 按回车键触发查询（优化手机输入体验）
+            nameInput.addEventListener('keypress', (e) => e.key === 'Enter' && queryInterview());
+        });
+    </script>
+</head>
+<body class="bg-gray-50 min-h-screen font-sans">
+    <!-- 页面头部 -->
+    <header class="bg-blue-600 text-white py-5 px-4 shadow-md">
+        <div class="container mx-auto text-center">
+            <h1 class="text-2xl font-bold mb-2">学术发展与权益部</h1>
+            <p class="text-blue-100 text-sm">面试时间与地点查询</p>
+        </div>
+    </header>
+
+    <!-- 主要内容区（手机端居中适配） -->
+    <main class="container mx-auto px-4 py-8">
+        <div class="bg-white rounded-lg shadow-md p-6 max-w-md mx-auto">
+            <div class="text-center mb-6">
+                <i class="fa-solid fa-calendar-check text-blue-600 text-4xl mb-4"></i>
+                <h2 class="text-xl font-semibold text-gray-800">面试信息查询</h2>
+                <p class="text-gray-600 mt-2 text-sm">点击下方按钮查询您的面试安排</p>
+            </div>
+
+            <!-- 查询触发按钮（手机端大尺寸设计，便于点击） -->
+            <div class="text-center">
+                <a href="#" id="queryLink" class="inline-block bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-8 rounded-lg transition duration-300 shadow-md hover:shadow-lg">
+                    <i class="fa-solid fa-search mr-2"></i>查询面试信息
+                </a>
+            </div>
+
+            <!-- 辅助提示 -->
+            <div class="mt-8 bg-gray-50 p-3 rounded-md text-xs text-gray-600">
+                <p class="flex items-start">
+                    <i class="fa-solid fa-info-circle text-blue-500 mt-1 mr-2"></i>
+                    <span>查询时请输入真实姓名（与报名信息一致），获取时间后建议截图保存，提前了解路线，避免错过面试。</span>
+                </p>
+            </div>
+        </div>
+    </main>
+
+    <!-- 页脚 -->
+    <footer class="bg-gray-800 text-white py-4 px-4 mt-12">
+        <div class="container mx-auto text-center text-xs">
+            <p>学术发展与权益部 © 2025</p>
+            <p class="text-gray-400 mt-1">咨询电话：15680873286</p>
+        </div>
+    </footer>
+
+    <!-- 弹窗：查询结果（手机端适配尺寸） -->
+    <div id="resultModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-lg shadow-xl max-w-md w-full mx-4 overflow-hidden transform transition-all">
+            <!-- 弹窗头部 -->
+            <div class="bg-blue-600 text-white py-3 px-4 flex justify-between items-center">
+                <h3 class="font-bold text-base">面试信息查询结果</h3>
+                <button id="closeModal" class="text-white hover:text-blue-100">
+                    <i class="fa-solid fa-times"></i>
+                </button>
+            </div>
+
+            <!-- 弹窗内容 -->
+            <div class="p-5">
+                <!-- 姓名输入框（手机端优化高度和间距） -->
+                <div class="mb-4">
+                    <label for="nameInput" class="block text-gray-700 font-medium mb-2 text-sm">请输入您的姓名</label>
+                    <div class="flex">
+                        <input type="text" id="nameInput" class="flex-1 px-3 py-2 border border-gray-300 rounded-l-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm" placeholder="例如：张三">
+                        <button id="queryBtn" class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-r-lg transition duration-300">
+                            <i class="fa-solid fa-search"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 结果显示区域 -->
+                <div id="resultContent" class="mt-3">
+                    <!-- 结果通过JS动态插入 -->
+                </div>
+            </div>
+
+            <!-- 弹窗底部（关闭按钮） -->
+            <div class="bg-gray-50 p-3 flex justify-end">
+                <button id="closeModalBtn" class="bg-gray-300 hover:bg-gray-400 text-gray-800 px-4 py-1.5 rounded-lg transition duration-300 text-sm">
+                    关闭
+                </button>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+    

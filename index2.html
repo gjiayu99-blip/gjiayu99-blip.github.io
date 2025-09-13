@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>任职证明信息查询核对</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    
+    <!-- 配置Tailwind自定义主题 -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#165DFF',
+                        secondary: '#36CFC9',
+                        neutral: '#F5F7FA',
+                        dark: '#1D2129'
+                    },
+                    fontFamily: {
+                        inter: ['Inter', 'system-ui', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+            .card-shadow {
+                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            }
+            .input-focus {
+                @apply focus:border-primary focus:ring-2 focus:ring-primary/20 focus:outline-none;
+            }
+            .btn-hover {
+                @apply hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300;
+            }
+        }
+    </style>
+</head>
+<body class="bg-neutral font-inter text-dark min-h-screen flex flex-col">
+    <!-- 顶部导航栏 -->
+    <header class="bg-white shadow-sm sticky top-0 z-10">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <div class="flex items-center space-x-2">
+                <i class="fa fa-id-card-o text-primary text-2xl"></i>
+                <h1 class="text-xl md:text-2xl font-bold text-primary">任职证明查询</h1>
+            </div>
+            <div class="text-sm text-gray-500">
+                <i class="fa fa-calendar mr-1"></i>上一学年信息
+            </div>
+        </div>
+    </header>
+
+    <!-- 主要内容区 -->
+    <main class="flex-grow container mx-auto px-4 py-8 md:py-16">
+        <!-- 说明卡片 -->
+        <div class="bg-white rounded-xl p-5 mb-8 card-shadow">
+            <div class="flex items-start mb-4">
+                <div class="bg-primary/10 p-2 rounded-full mr-3">
+                    <i class="fa fa-info-circle text-primary"></i>
+                </div>
+                <div>
+                    <h2 class="text-lg font-semibold mb-1">查询说明</h2>
+                    <p class="text-gray-600 text-sm">请输入姓名查询上一学年学术发展与权益部任职人员信息，系统将显示匹配的任职证明信息。</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 查询区域 -->
+        <div class="max-w-md mx-auto">
+            <div class="bg-white rounded-xl p-6 md:p-8 card-shadow mb-6 transform transition-all duration-500 hover:shadow-xl">
+                <h2 class="text-xl font-bold mb-6 text-center">信息查询</h2>
+                
+                <div class="space-y-4">
+                    <!-- 姓名输入框 -->
+                    <div>
+                        <label for="nameInput" class="block text-sm font-medium text-gray-700 mb-1">姓名</label>
+                        <div class="relative">
+                            <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-500">
+                                <i class="fa fa-user"></i>
+                            </span>
+                            <input 
+                                type="text" 
+                                id="nameInput" 
+                                placeholder="请输入要查询的姓名" 
+                                class="w-full pl-10 pr-4 py-3 rounded-lg border border-gray-300 input-focus transition-all duration-300"
+                            >
+                        </div>
+                    </div>
+                    
+                    <!-- 查询按钮 -->
+                    <button 
+                        onclick="searchInfo()" 
+                        class="w-full bg-primary text-white font-medium py-3 px-4 rounded-lg btn-hover flex items-center justify-center"
+                    >
+                        <i class="fa fa-search mr-2"></i>
+                        开始查询
+                    </button>
+                </div>
+            </div>
+            
+            <!-- 结果展示区域 -->
+            <div id="result" class="min-h-[200px] bg-white rounded-xl p-6 card-shadow transition-all duration-500 opacity-0 transform translate-y-4">
+                <!-- 结果将通过JavaScript动态插入 -->
+            </div>
+        </div>
+    </main>
+
+    <!-- 页脚 -->
+    <footer class="bg-white border-t mt-12 py-6">
+        <div class="container mx-auto px-4 text-center text-gray-500 text-sm">
+            <p>© 2024 学术发展与权益部 版权所有</p>
+            <p class="mt-1">本系统查询结果为上一学年任职信息，仅供内部核对使用</p>
+        </div>
+    </footer>
+
+    <script>
+        // 人员数据 - 部门固定为学术发展与权益部，不包含序号，为上一学年信息
+        const data = [
+            {
+                "部门": "学术发展与权益部",
+                "姓名": "罗昊宸",
+                "性别": "男",
+                "学院": "机械与电气工程学院",
+                "职务": "分管主席",
+                "学号": 202321040122
+            },
+            {
+                "部门": "学术发展与权益部",
+                "姓名": "吴诗",
+                "性别": "女",
+                "学院": "马克思主义学院",
+                "职务": "部长",
+                "学号": 202321180160
+            },
+            {
+                "部门": "学术发展与权益部",
+                "姓名": "蒲虹秀",
+                "性别": "女",
+                "学院": "外国语学院",
+                "职务": "部长",
+                "学号": 202322170236
+            },
+            {
+                "部门": "学术发展与权益部",
+                "姓名": "冯晟",
+                "性别": "男",
+                "学院": "航空航天学院 ",
+                "职务": "部长",
+                "学号": 202322100530
+            },
+            {
+                "部门": "学术发展与权益部",
+                "姓名": "王贺",
+                "性别": "男",
+                "学院": "机械与电气工程学院",
+                "职务": "部员",
+                "学号": 202421040160
+            },
+            {
+                "部门": "学术发展与权益部",
+                "姓名": "杨岚",
+                "性别": "女",
+                "学院": "公共管理学院",
+                "职务": "部员",
+                "学号": 202421160336
+            },
+            {
+                "部门": "学术发展与权益部",
+                "姓名": "王乐荣",
+                "性别": "男",
+                "学院": "集成电路科学与工程学院",
+                "职务": "部员",
+                "学号": 202421310132
+            },
+            {
+                "部门": "学术发展与权益部",
+                "姓名": "石诗雨",
+                "性别": "女",
+                "学院": "马克思主义学院",
+                "职务": "部员",
+                "学号": 202421180122
+            },
+            {
+                "部门": "学术发展与权益部",
+                "姓名": "苗点",
+                "性别": "女",
+                "学院": "信息与通信学院",
+                "职务": "部员",
+                "学号": 202421011623
+            },
+            {
+                "部门": "学术发展与权益部",
+                "姓名": "肖薇",
+                "性别": "女",
+                "学院": "公共管理学院",
+                "职务": "部员",
+                "学号": 202421160204
+            },
+            {
+                "部门": "学术发展与权益部",
+                "姓名": "蔡桂章",
+                "性别": "男",
+                "学院": "机械与电气工程学院",
+                "职务": "部员",
+                "学号": 20242104011
+            },
+            {
+                "部门": "学术发展与权益部",
+                "姓名": "蒋雯倩",
+                "性别": "女",
+                "学院": "经济与管理学院",
+                "职务": "部员",
+                "学号": 202421150227
+            },
+            {
+                "部门": "学术发展与权益部",
+                "姓名": "陈惠",
+                "性别": "女",
+                "学院": "外国语学院",
+                "职务": "部员",
+                "学号": 202421170134
+            },
+            {
+                "部门": "学术发展与权益部",
+                "姓名": "喻意",
+                "性别": "女",
+                "学院": "经济与管理学院",
+                "职务": "部员",
+                "学号": 202421150213
+            },
+            {
+                "部门": "学术发展与权益部",
+                "姓名": "符元双",
+                "性别": "男",
+                "学院": "电子科学技术研究院",
+                "职务": "部员",
+                "学号": 202421230104
+            },
+            {
+                "部门": "学术发展与权益部",
+                "姓名": "郑雪锋",
+                "性别": "男",
+                "学院": "电子科学与工程学院",
+                "职务": "部员",
+                "学号": 202421021222
+            },
+            {
+                "部门": "学术发展与权益部",
+                "姓名": "吴浩锟",
+                "性别": "男",
+                "学院": "电子科学与工程学院",
+                "职务": "部员",
+                "学号": 202422020202
+            },
+            {
+                "部门": "学术发展与权益部",
+                "姓名": "王海龙",
+                "性别": "男",
+                "学院": "物理学院",
+                "职务": "部员",
+                "学号": 202421120209
+            },
+            {
+                "部门": "学术发展与权益部",
+                "姓名": "陈子怡",
+                "性别": "女",
+                "学院": "生命科学与技术学院",
+                "职务": "部员",
+                "学号": 202421140136
+            },
+            {
+                "部门": "学术发展与权益部",
+                "姓名": "赵威",
+                "性别": "男",
+                "学院": "经济与管理学院",
+                "职务": "部员",
+                "学号": 202472151618
+            },
+            {
+                "部门": "学术发展与权益部",
+                "姓名": "周进",
+                "性别": "男",
+                "学院": "经济与管理学院",
+                "职务": "部员",
+                "学号": 202472151610
+            }
+        ];
+
+        // 查询功能
+        function searchInfo() {
+            const name = document.getElementById('nameInput').value.trim();
+            const resultDiv = document.getElementById('result');
+            
+            // 清空结果区域
+            resultDiv.innerHTML = '';
+            
+            // 验证输入
+            if (!name) {
+                showResult(resultDiv, `
+                    <div class="flex items-center justify-center h-40">
+                        <div class="text-center">
+                            <i class="fa fa-exclamation-circle text-yellow-500 text-3xl mb-3"></i>
+                            <p class="text-gray-600">请输入姓名后再进行查询</p>
+                        </div>
+                    </div>
+                `);
+                return;
+            }
+            
+            // 查找匹配的人员信息
+            const found = data.find(item => item.姓名 === name);
+            
+            if (found) {
+                // 找到匹配信息，显示表格
+                showResult(resultDiv, `
+                    <div class="border-b pb-3 mb-4">
+                        <h3 class="text-lg font-bold">查询结果</h3>
+                        <p class="text-gray-500 text-sm">上一学年 - 学术发展与权益部 - ${found.姓名}</p>
+                    </div>
+                    
+                    <table class="w-full">
+                        <tbody>
+                            <tr class="border-b border-gray-100">
+                                <td class="py-3 text-gray-500 w-1/3">部门</td>
+                                <td class="py-3 font-medium">${found.部门}</td>
+                            </tr>
+                            <tr class="border-b border-gray-100">
+                                <td class="py-3 text-gray-500">姓名</td>
+                                <td class="py-3 font-medium">${found.姓名}</td>
+                            </tr>
+                            <tr class="border-b border-gray-100">
+                                <td class="py-3 text-gray-500">性别</td>
+                                <td class="py-3 font-medium">${found.性别}</td>
+                            </tr>
+                            <tr class="border-b border-gray-100">
+                                <td class="py-3 text-gray-500">学院</td>
+                                <td class="py-3 font-medium">${found.学院}</td>
+                            </tr>
+                            <tr class="border-b border-gray-100">
+                                <td class="py-3 text-gray-500">职务</td>
+                                <td class="py-3 font-medium">${found.职务}</td>
+                            </tr>
+                            <tr>
+                                <td class="py-3 text-gray-500">学号</td>
+                                <td class="py-3 font-medium">${found.学号}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    
+                    <div class="mt-6 pt-4 border-t border-gray-100">
+                        <div class="bg-primary/5 rounded-lg p-3 text-sm text-gray-600 flex items-start">
+                            <i class="fa fa-check-circle text-primary mt-0.5 mr-2"></i>
+                            <p>以上信息经核对无误，确认为上一学年学术发展与权益部任职人员。</p>
+                        </div>
+                    </div>
+                `);
+            } else {
+                // 未找到匹配信息
+                showResult(resultDiv, `
+                    <div class="flex items-center justify-center h-40">
+                        <div class="text-center">
+                            <i class="fa fa-search text-gray-300 text-3xl mb-3"></i>
+                            <p class="text-gray-600">未找到姓名为"${name}"的任职信息</p>
+                            <p class="text-gray-400 text-sm mt-2">请检查姓名是否正确或该人员上一学年未在学术发展与权益部任职</p>
+                        </div>
+                    </div>
+                `);
+            }
+        }
+
+        // 显示结果并添加动画效果
+        function showResult(element, content) {
+            // 先隐藏元素
+            element.style.opacity = '0';
+            element.style.transform = 'translateY(10px)';
+            
+            // 设置内容
+            element.innerHTML = content;
+            
+            // 触发重排
+            void element.offsetWidth;
+            
+            // 显示元素并添加动画
+            element.style.opacity = '1';
+            element.style.transform = 'translateY(0)';
+        }
+
+        // 支持回车键查询
+        document.getElementById('nameInput').addEventListener('keyup', function(event) {
+            if (event.key === 'Enter') {
+                searchInfo();
+            }
+        });
+    </script>
+</body>
+</html>
